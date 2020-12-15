@@ -5,11 +5,32 @@
  */
 package miniForm;
 
+import DAO.BanHangDao;
+import DAO.danhMucDao;
+import DAO.monAnDao;
+import Helper.shareHelper;
+import Helper.unlityHelper;
+import helper.dialogHelper;
+import java.io.File;
+import javax.smartcardio.CommandAPDU;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import model.MonAn;
+import model.DanhMuc_duc;
+
 /**
  *
  * @author CHIEN
  */
 public class ThemMonAn extends javax.swing.JFrame {
+
+    JFileChooser fileChooser = new JFileChooser();
+    monAnDao dao = new monAnDao();
+
+//    DefaultComboBoxModel comBoMode;
+    DefaultComboBoxModel comBoDanhMuc;
+    danhMucDao dmd = new danhMucDao();
 
     /**
      * Creates new form ThemMonAn
@@ -17,6 +38,9 @@ public class ThemMonAn extends javax.swing.JFrame {
     public ThemMonAn() {
         initComponents();
         setLocationRelativeTo(null);
+        
+        loadDataToComBoDM();
+
     }
 
     /**
@@ -30,23 +54,22 @@ public class ThemMonAn extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
+        lbHinh = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtTenMon = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        CbDanhMuc = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        txtGiaBan = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        BtnHuy = new javax.swing.JButton();
+        btnThem = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setAlwaysOnTop(true);
-        setMaximumSize(new java.awt.Dimension(700, 600));
         setMinimumSize(new java.awt.Dimension(700, 600));
         setUndecorated(true);
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
@@ -62,11 +85,15 @@ public class ThemMonAn extends javax.swing.JFrame {
         jPanel2.setPreferredSize(new java.awt.Dimension(250, 250));
         jPanel2.setLayout(new java.awt.GridLayout(1, 0));
 
-        jLabel6.setText("Ảnh");
-        jLabel6.setMaximumSize(new java.awt.Dimension(250, 250));
-        jLabel6.setMinimumSize(new java.awt.Dimension(250, 250));
-        jLabel6.setPreferredSize(new java.awt.Dimension(250, 250));
-        jPanel2.add(jLabel6);
+        lbHinh.setMaximumSize(new java.awt.Dimension(250, 250));
+        lbHinh.setMinimumSize(new java.awt.Dimension(250, 250));
+        lbHinh.setPreferredSize(new java.awt.Dimension(250, 250));
+        lbHinh.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbHinhMouseClicked(evt);
+            }
+        });
+        jPanel2.add(lbHinh);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(240, 240, 240));
@@ -76,13 +103,12 @@ public class ThemMonAn extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Tên món");
 
-        jTextField1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jTextField1.setForeground(new java.awt.Color(107, 70, 52));
-        jTextField1.setText("jTextField1");
-        jTextField1.setVerifyInputWhenFocusTarget(false);
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtTenMon.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtTenMon.setForeground(new java.awt.Color(107, 70, 52));
+        txtTenMon.setVerifyInputWhenFocusTarget(false);
+        txtTenMon.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtTenMonActionPerformed(evt);
             }
         });
 
@@ -90,13 +116,18 @@ public class ThemMonAn extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Danh mục món");
 
-        jComboBox1.setBackground(new java.awt.Color(204, 204, 255));
-        jComboBox1.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
-        jComboBox1.setForeground(new java.awt.Color(107, 70, 52));
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Mặc định", "trà sữa", "coffe", "đồ ăn vặt", "đồ uống" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+        CbDanhMuc.setBackground(new java.awt.Color(204, 204, 255));
+        CbDanhMuc.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
+        CbDanhMuc.setForeground(new java.awt.Color(107, 70, 52));
+        CbDanhMuc.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3" }));
+        CbDanhMuc.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                CbDanhMucItemStateChanged(evt);
+            }
+        });
+        CbDanhMuc.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
+                CbDanhMucActionPerformed(evt);
             }
         });
 
@@ -104,30 +135,34 @@ public class ThemMonAn extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Giá bán");
 
-        jTextField2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jTextField2.setForeground(new java.awt.Color(107, 70, 52));
-        jTextField2.setText("jTextField1");
-        jTextField2.setVerifyInputWhenFocusTarget(false);
+        txtGiaBan.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtGiaBan.setForeground(new java.awt.Color(107, 70, 52));
+        txtGiaBan.setVerifyInputWhenFocusTarget(false);
 
         jPanel3.setBackground(new java.awt.Color(107, 70, 52));
         jPanel3.setLayout(new java.awt.GridLayout(2, 1, 20, 30));
 
-        jButton1.setBackground(new java.awt.Color(201, 0, 15));
-        jButton1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Hủy");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        BtnHuy.setBackground(new java.awt.Color(201, 0, 15));
+        BtnHuy.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        BtnHuy.setForeground(new java.awt.Color(255, 255, 255));
+        BtnHuy.setText("Hủy");
+        BtnHuy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                BtnHuyActionPerformed(evt);
             }
         });
-        jPanel3.add(jButton1);
+        jPanel3.add(BtnHuy);
 
-        jButton2.setBackground(new java.awt.Color(1, 161, 79));
-        jButton2.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Thêm");
-        jPanel3.add(jButton2);
+        btnThem.setBackground(new java.awt.Color(1, 161, 79));
+        btnThem.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        btnThem.setForeground(new java.awt.Color(255, 255, 255));
+        btnThem.setText("Thêm");
+        btnThem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThemActionPerformed(evt);
+            }
+        });
+        jPanel3.add(btnThem);
 
         jPanel4.setBackground(new java.awt.Color(107, 70, 52));
         jPanel4.setMinimumSize(new java.awt.Dimension(0, 0));
@@ -147,13 +182,13 @@ public class ThemMonAn extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtTenMon, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtGiaBan, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
                             .addComponent(jLabel4)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(CbDanhMuc, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel5)
                             .addComponent(jLabel1))
                         .addGap(0, 134, Short.MAX_VALUE))
@@ -178,15 +213,15 @@ public class ThemMonAn extends javax.swing.JFrame {
                         .addGap(20, 20, 20)
                         .addComponent(jLabel3)
                         .addGap(10, 10, 10)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtTenMon, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(10, 10, 10)
                         .addComponent(jLabel4)
                         .addGap(10, 10, 10)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CbDanhMuc, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(10, 10, 10)
                         .addComponent(jLabel5)
                         .addGap(10, 10, 10)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtGiaBan, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
@@ -199,19 +234,95 @@ public class ThemMonAn extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+    private void CbDanhMucActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CbDanhMucActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
+    }//GEN-LAST:event_CbDanhMucActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtTenMonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTenMonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtTenMonActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void BtnHuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnHuyActionPerformed
         // TODO add your handling code here:
         dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_BtnHuyActionPerformed
 
+    private void lbHinhMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbHinhMouseClicked
+        this.selectImage();
+    }//GEN-LAST:event_lbHinhMouseClicked
+
+    private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
+ 
+         if (unlityHelper.checkNullText(txtTenMon)) {
+            if (unlityHelper.checkName(txtTenMon)) {
+                if (unlityHelper.checkNullText(txtGiaBan)) {
+                    if (unlityHelper.checkMoney(txtGiaBan)) {
+                        if(checkNullHinh()){
+                            selectImage();
+                            insert();
+                    }}
+                }
+            }
+        }
+    }//GEN-LAST:event_btnThemActionPerformed
+
+    private void CbDanhMucItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_CbDanhMucItemStateChanged
+
+    }//GEN-LAST:event_CbDanhMucItemStateChanged
+
+    void insert() {
+        MonAn model = getModel();
+        try {
+            dao.insert(model);
+            helper.dialogHelper.alert(this, "Thêm mới thành công");
+        } catch (Exception e){
+            helper.dialogHelper.alert(this, " Thêm mới thất bại");
+        }
+
+    }
+
+    //lấy thông tin trên form điền vào đt
+    MonAn getModel() {
+        MonAn model = new MonAn();
+        DanhMuc_duc dm = (DanhMuc_duc) comBoDanhMuc.getElementAt(CbDanhMuc.getSelectedIndex());
+        model.setTenMon(txtTenMon.getText());
+        model.setDonGia(Double.valueOf(txtGiaBan.getText()));
+        model.setHinhAnh(lbHinh.getToolTipText());
+        model.setMaDanhMuc(dm.getMaDanhMuc());
+        model.setTrangThai(1);
+        return model;
+    }
+
+    void selectImage() {
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) { //nếu người dùng đã chọn đc file
+            File file = fileChooser.getSelectedFile();    //lấy file người dùng chọn
+            if (shareHelper.saveLogo(file)) {  //sao chép file đã chọn thư mục 
+                // Hiển thị hình lên form
+                lbHinh.setIcon(shareHelper.readLogo(file.getName())); //file.getName(); lấy tên của file
+                //ImageIcon readLogo(String tenFile) đọc file trong thư mục logos theo tên file trả về ImageIcon
+                //void setIcon(ImageIcon icon) set Icon cho lbl
+                lbHinh.setToolTipText(file.getName());
+            }
+        }
+
+    }
+
+    public void loadDataToComBoDM() {
+        comBoDanhMuc = (DefaultComboBoxModel) CbDanhMuc.getModel();
+        dmd.LoadDataToComBoDanhMuc(comBoDanhMuc);
+    }
+//    public void loatMa(){
+//      comBoDanhMuc = (DefaultComboBoxModel) CbDanhMuc.getModel();
+//      dmd.loadMadm(comBoDanhMuc);
+//    }
+ public boolean checkNullHinh() {
+        if (lbHinh.getToolTipText() != null) {
+            return true;
+        } else {
+            dialogHelper.alert(this, "Không được để trống hình.");
+            return false;
+        }
+    }
     /**
      * @param args the command line arguments
      */
@@ -238,6 +349,9 @@ public class ThemMonAn extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(ThemMonAn.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -248,20 +362,21 @@ public class ThemMonAn extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JButton BtnHuy;
+    private javax.swing.JComboBox<String> CbDanhMuc;
+    private javax.swing.JButton btnThem;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JLabel lbHinh;
+    private javax.swing.JTextField txtGiaBan;
+    private javax.swing.JTextField txtTenMon;
     // End of variables declaration//GEN-END:variables
+
 }

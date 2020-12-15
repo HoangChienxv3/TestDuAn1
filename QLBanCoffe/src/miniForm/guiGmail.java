@@ -5,19 +5,39 @@
  */
 package miniForm;
 
+import DAO.TaiKhoanDao;
+import DAO.maXacNhanDao;
+import Helper.unlityHelper;
+import helper.dialogHelper;
+import java.util.Properties;
+import java.util.Random;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.swing.JOptionPane;
+import model.MaXacNhan;
+import model.TaiKhoanMode;
+
 /**
  *
  * @author CHIEN
  */
 public class guiGmail extends javax.swing.JFrame {
 
-    /**
-     * Creates new form guiGmail
-     */
+    Random rd = new Random();
+    int number = 100000 + rd.nextInt(999999);
+    TaiKhoanMode tk = new TaiKhoanMode();
+    maXacNhanDao dao = new maXacNhanDao();
+    TaiKhoanDao daotk = new TaiKhoanDao();
+
     public guiGmail() {
         initComponents();
         setLocationRelativeTo(null);
-        
+
     }
 
     /**
@@ -31,7 +51,7 @@ public class guiGmail extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtGmail = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
@@ -39,7 +59,6 @@ public class guiGmail extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setAlwaysOnTop(true);
-        setMaximumSize(new java.awt.Dimension(400, 300));
         setMinimumSize(new java.awt.Dimension(400, 300));
         setUndecorated(true);
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
@@ -50,13 +69,12 @@ public class guiGmail extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Nhập Gmail");
 
-        jTextField1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jTextField1.setForeground(new java.awt.Color(107, 70, 52));
-        jTextField1.setText("jTextField1");
-        jTextField1.setVerifyInputWhenFocusTarget(false);
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtGmail.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtGmail.setForeground(new java.awt.Color(107, 70, 52));
+        txtGmail.setVerifyInputWhenFocusTarget(false);
+        txtGmail.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtGmailActionPerformed(evt);
             }
         });
 
@@ -98,7 +116,7 @@ public class guiGmail extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField1)
+                    .addComponent(txtGmail)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
@@ -115,7 +133,7 @@ public class guiGmail extends javax.swing.JFrame {
                 .addGap(26, 26, 26)
                 .addComponent(jLabel3)
                 .addGap(20, 20, 20)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtGmail, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30))
@@ -126,9 +144,9 @@ public class guiGmail extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtGmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtGmailActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtGmailActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
@@ -136,11 +154,108 @@ public class guiGmail extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        DoiMatKhau dmk = new DoiMatKhau();
-        dmk.setVisible(true);
-        dispose();
+        try {
+            if (unlityHelper.checkNullText(txtGmail)) {
+                if (unlityHelper.checkEmail(txtGmail)) {
+                    if (checkMailTT()) {
+                        seen();
+                        insert();
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+        }
+
+         dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
+    public void seen() {
+        final String username = "duanmot123@gmail.com";
+        final String password = "phaiquamon";
+//        Random rd = new Random();
+//        int number = 100000 + rd.nextInt(999999);
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true"); //TLS
+
+        Session session = Session.getInstance(prop,
+                new javax.mail.Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+
+        try {
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress("duanmot123@gmail.com"));
+            message.setRecipients(
+                    Message.RecipientType.TO,
+                    InternetAddress.parse(txtGmail.getText())
+            );
+            message.setSubject("Cấp mã xác nhận : ");
+            dialogHelper.alert(this, "Gửi mã xác nhận thành công !!!");
+            message.setText("Hệ thống đã nhận được yêu cầu sử dụng địa chỉ email này để giúp khôi phục tài khoản : \n"
+                    + txtGmail.getText() + "\n"
+                    + "Mã xác nhận : " + number + "\n"
+                    + "Trân trọng" + "\n"
+                    + "Quản lý bán hàng Cafe <3 Thầy Việt yêu dấu"
+            );
+
+            Transport.send(message);
+            // JOptionPane.showMessageDialog(this, "Gửi mã xác nhận thành công");
+            String email = txtGmail.getText();
+            new DoiMatKhau(email).setVisible(true);
+            // DoiMatKhau dmk = new DoiMatKhau();
+            // dmk.setVisible(true);
+            
+
+        } catch (MessagingException e) {
+
+        }
+    }
+
+    void insert() {
+        MaXacNhan model = getmodel();
+        try {
+            dao.insert(model);
+        } catch (Exception e) {
+            dialogHelper.alert(this, "Gửi mã xác nhận thất bại");
+        }
+
+    }
+
+    MaXacNhan getmodel() {
+        long millis = System.currentTimeMillis();
+        java.sql.Date date = new java.sql.Date(millis);
+        MaXacNhan model = new MaXacNhan();
+        model.setMaXacNan(String.valueOf(number));
+        model.setNgayTao(date + "");
+        return model;
+    }
+
+    public boolean checkMailTT() {
+        String mail = txtGmail.getText();
+        try {
+            tk = daotk.findByEmail(mail);
+            if (tk != null) {
+                System.out.println("Gửi mã xác nhận thành công");
+                dispose();
+                return true;
+            }
+            if (tk == null) {
+                dialogHelper.alert(this, "Tài khoản không tồn tại vui lòng nhập tài khoản hợp lệ");
+                return false;
+            }
+
+        } catch (Exception e) {
+        }
+        return true;
+
+    }
 
     /**
      * @param args the command line arguments
@@ -168,6 +283,9 @@ public class guiGmail extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(guiGmail.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -184,6 +302,6 @@ public class guiGmail extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField txtGmail;
     // End of variables declaration//GEN-END:variables
 }
