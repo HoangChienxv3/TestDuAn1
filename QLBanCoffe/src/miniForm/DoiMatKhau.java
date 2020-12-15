@@ -5,10 +5,10 @@
  */
 package miniForm;
 
-import DAO.TaiKhoanDao;
+import DAO.Duc.TaiKhoanDao;
 import DAO.maXacNhanDao;
-import Helper.unlityHelper;
-import helper.dialogHelper;
+import Helper.Duc.unlityHelper;
+import Helper.Duc.dialogHelper;
 import static java.awt.Color.pink;
 import javax.swing.JOptionPane;
 import model.MaXacNhan;

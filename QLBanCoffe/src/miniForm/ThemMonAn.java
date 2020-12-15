@@ -6,18 +6,18 @@
 package miniForm;
 
 import DAO.BanHangDao;
-import DAO.danhMucDao;
+import DAO.Duc.danhMucDao;
 import DAO.monAnDao;
 import Helper.shareHelper;
-import Helper.unlityHelper;
-import helper.dialogHelper;
+import Helper.Duc.unlityHelper;
+import Helper.Duc.dialogHelper;
 import java.io.File;
 import javax.smartcardio.CommandAPDU;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import model.MonAn;
-import model.DanhMuc_duc;
+import model.DanhMuc;
 
 /**
  *
@@ -274,9 +274,9 @@ public class ThemMonAn extends javax.swing.JFrame {
         MonAn model = getModel();
         try {
             dao.insert(model);
-            helper.dialogHelper.alert(this, "Thêm mới thành công");
+            Helper.Duc.dialogHelper.alert(this, "Thêm mới thành công");
         } catch (Exception e){
-            helper.dialogHelper.alert(this, " Thêm mới thất bại");
+            Helper.Duc.dialogHelper.alert(this, " Thêm mới thất bại");
         }
 
     }
@@ -284,7 +284,7 @@ public class ThemMonAn extends javax.swing.JFrame {
     //lấy thông tin trên form điền vào đt
     MonAn getModel() {
         MonAn model = new MonAn();
-        DanhMuc_duc dm = (DanhMuc_duc) comBoDanhMuc.getElementAt(CbDanhMuc.getSelectedIndex());
+        DanhMuc dm = (DanhMuc) comBoDanhMuc.getElementAt(CbDanhMuc.getSelectedIndex());
         model.setTenMon(txtTenMon.getText());
         model.setDonGia(Double.valueOf(txtGiaBan.getText()));
         model.setHinhAnh(lbHinh.getToolTipText());
@@ -348,6 +348,10 @@ public class ThemMonAn extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(ThemMonAn.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>

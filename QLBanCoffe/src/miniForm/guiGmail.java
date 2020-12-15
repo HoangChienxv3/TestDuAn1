@@ -5,10 +5,10 @@
  */
 package miniForm;
 
-import DAO.TaiKhoanDao;
+import DAO.Duc.TaiKhoanDao;
 import DAO.maXacNhanDao;
-import Helper.unlityHelper;
-import helper.dialogHelper;
+import Helper.Duc.unlityHelper;
+import Helper.Duc.dialogHelper;
 import java.util.Properties;
 import java.util.Random;
 import javax.mail.Message;
@@ -167,7 +167,6 @@ public class guiGmail extends javax.swing.JFrame {
         } catch (Exception e) {
         }
 
-         dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
     public void seen() {
         final String username = "duanmot123@gmail.com";
@@ -282,6 +281,10 @@ public class guiGmail extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(guiGmail.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
