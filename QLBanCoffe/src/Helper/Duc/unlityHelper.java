@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Helper;
+package Helper.Duc;
 
 import java.awt.Color;
 import static java.awt.Color.pink;
@@ -26,7 +26,7 @@ public class unlityHelper {
             return true;
         } else {
             txt.setBackground(Color.pink);
-            helper.dialogHelper.alert(txt.getRootPane(), txt.getText() + "Bạn nhập sai định dạng tên món ăn");
+            Helper.Duc.dialogHelper.alert(txt.getRootPane(), txt.getText() + "Bạn nhập sai định dạng tên món ăn");
             return false;
         }
     }
@@ -39,12 +39,12 @@ public class unlityHelper {
                 return true;
             } else {
                 txt.setBackground(pink);
-                helper.dialogHelper.alert(txt.getRootPane(), txt.getName() + " giá tiền phải là lớn hơn hoặc bằng 0.");
+                Helper.Duc.dialogHelper.alert(txt.getRootPane(), txt.getName() + " giá tiền phải là lớn hơn hoặc bằng 0.");
                 return false;
             }
         } catch (NumberFormatException e) {
             txt.setBackground(pink);
-            helper.dialogHelper.alert(txt.getRootPane(), txt.getName() + " giá tiền phải là số thực.");
+            Helper.Duc.dialogHelper.alert(txt.getRootPane(), txt.getName() + " giá tiền phải là số thực.");
             return false;
         }
     }
@@ -55,7 +55,7 @@ public class unlityHelper {
             return true;
         } else {
             txt.setBackground(pink);
-            helper.dialogHelper.alert(txt.getRootPane(), "Không được để trống " + txt.getName());
+            Helper.Duc.dialogHelper.alert(txt.getRootPane(), "Không được để trống " + txt.getName());
             return false;
         }
 
@@ -68,7 +68,7 @@ public class unlityHelper {
             return true;
         } else {
             txt.setBackground(pink);
-            helper.dialogHelper.alert(txt.getRootPane(), txt.getName() + " không đúng định dạng");
+            Helper.Duc.dialogHelper.alert(txt.getRootPane(), txt.getName() + " không đúng định dạng");
             return false;
         }
     }
